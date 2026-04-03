@@ -32,18 +32,104 @@
             </div>
         </div>
 
+
         <!-- Screenshots -->
         {% if app.screenshots %}
         <h3 class="mt-4">Screenshots</h3>
-        <div class="row">
+        <div class="row" id="screenshot-thumbnails">
             {% for img in app.screenshots %}
             <div class="col-6 col-md-4 col-lg-3 mb-3">
-                <img src="{{ img }}" class="img-fluid rounded" alt="Screenshot">
+                <img src="{{ img }}" class="img-fluid rounded screenshot-thumb" alt="Screenshot"
+                    onclick="openLightbox({{ loop.index0 }})">
             </div>
             {% endfor %}
         </div>
         {% endif %}
+
+        
+        
     </div>
+
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1050; justify-content: center; align-items: center; flex-direction: column;">
+        <span class="close-btn"
+            style="position: absolute; top: 20px; right: 30px; color: #fff; font-size: 30px; cursor: pointer; z-index: 1051;"
+            onclick="closeLightbox()">&times;</span>
+        <div class="lightbox-content"
+            style="position: relative; width: 90%; height: 80vh; display: flex; justify-content: center; align-items: center;">
+            <img id="lightbox-img" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        </div>
+        <button id="prev-btn" class="nav-btn"
+            style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #fff; font-size: 30px; background: none; border: none; cursor: pointer;">&#10094;</button>
+        <button id="next-btn" class="nav-btn"
+            style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: #fff; font-size: 30px; background: none; border: none; cursor: pointer;">&#10095;</button>
+    </div>
+
+    <script>
+        const screenshots = {{ app.screenshots | tojson }};
+        let currentIndex = 0;
+      
+        function openLightbox(index) {
+          currentIndex = index;
+          document.getElementById('lightbox-img').src = screenshots[currentIndex] + '=w2560-h1440-rw';
+          document.getElementById('lightbox').style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+      
+          // Prevent scroll
+          document.addEventListener('touchmove', preventScroll, { passive: false });
+        }
+      
+        function closeLightbox() {
+          document.getElementById('lightbox').style.display = 'none';
+          document.body.style.overflow = 'auto';
+          document.removeEventListener('touchmove', preventScroll);
+        }
+      
+        function showImage(index) {
+          currentIndex = (index + screenshots.length) % screenshots.length;
+          document.getElementById('lightbox-img').src = screenshots[currentIndex] + '=w2560-h1440-rw';
+        }
+      
+        function nextImage() {
+          showImage(currentIndex + 1);
+        }
+      
+        function prevImage() {
+          showImage(currentIndex - 1);
+        }
+      
+        function preventScroll(e) {
+          e.preventDefault();
+        }
+      
+        // Touch swipe
+        let touchStartX = 0;
+        document.getElementById('lightbox').addEventListener('touchstart', e => {
+          touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+      
+        document.getElementById('lightbox').addEventListener('touchend', e => {
+          const touchEndX = e.changedTouches[0].screenX;
+          if (touchStartX - touchEndX > 50) nextImage();
+          if (touchStartX - touchEndX < -50) prevImage();
+        }, { passive: true });
+      
+        // Keyboard navigation
+        document.addEventListener('keydown', e => {
+          if (document.getElementById('lightbox').style.display === 'none') return;
+          if (e.key === 'Escape') closeLightbox();
+          if (e.key === 'ArrowRight') nextImage();
+          if (e.key === 'ArrowLeft') prevImage();
+        });
+      
+        // Button events
+        document.getElementById('next-btn').onclick = nextImage;
+        document.getElementById('prev-btn').onclick = prevImage;
+      </script>   
+
+
 </body>
 
 </html>
