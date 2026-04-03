@@ -47,7 +47,7 @@
       {% for app in apps %}
         <a href="{{ url_for('app_detail', app_id=app.id) }}" class="text-decoration-none text-dark">
           <div class="app-card">
-            <img src="{{ app.thumbnail }}" alt="{{ app.title }}" onerror="this.src='https://via.placeholder.com/120?text=No+Image'"/>
+            <img src="{{ app.thumbnail }}" alt="{{ app.title }}" onerror="this.src='https://placehold.co/120?text=No+Image'"/>
             <div class="title" title="{{ app.title }}">{{ app.title }}</div>
           </div>
         </a>
