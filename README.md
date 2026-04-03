@@ -33,9 +33,13 @@ A Flask-based web app to browse and manage cached Google Play Store app data.
 git clone https://github.com/your-username/playstore-viewer.git
 cd playstore-viewer
 pip install -r requirements.txt
-python app.p   
+python app.py
+```
 
-Call the save to cache and save the JSON of the app you want to add
+## Fast adding data
+```
+Call the route /save to add new listing data, this saves the JSON in **data/android**
 for example
-##com.google.android.keep
+to save **com.google.android.keep**
 http://localhost:5000/save/com.google.android.keep
+```
